@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import ca.ualberta.ssrg.androidelasticsearch.R;
@@ -23,12 +25,15 @@ public class MainActivity extends Activity {
 
 	private Context mContext = this;
 
+	EditText thetext;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		movieList = (ListView) findViewById(R.id.movieList);
+
 	}
 
 	@Override
@@ -71,7 +76,9 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		
-		
+		// You cannot access network from the gui thread
+		// So, let us create another thread to do that work.
+		// If we try to use the gui thread -- the gui will stop and wait.
 		SearchThread thread = new SearchThread("*");
 
 		thread.start();
@@ -99,10 +106,15 @@ public class MainActivity extends Activity {
 	 */
 	public void search(View view) {
 		movies.clear();
+		String query;
 
 		// TODO: Extract search query from text view
-		
+		thetext = (EditText) findViewById(R.id.editText1);
+		query = thetext.getText().toString();
+
 		// TODO: Run the search thread
+		SearchThread thread = new SearchThread(query);
+		thread.start();
 		
 	}
 	
